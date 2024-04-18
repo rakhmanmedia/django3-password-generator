@@ -1,32 +1,196 @@
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+{% extends 'generator/base.html' %}
 
-<div class="container text-center">
-    <h1>Password Generator</h1>
+{% block content %}
 
-    <p>
-        <form action="{% url 'password' %}">
-            <select name="length">
-                <option value="6">6</option>
-                <option value="7">7</option>
-                <option value="8">8</option>
-                <option value="9">9</option>
-                <option value="10">10</option>
-                <option value="11">11</option>
-                <option value="12" selected="selected">12</option>
-                <option value="13">13</option>
-                <option value="14">14</option>
-            </select> Length
-            <br />
-            <input class="form-check-input" type="checkbox" name="uppercase" /> Uppercase
-            <br />
-            <input class="form-check-input" type="checkbox" name="numbers" /> Numbers
-            <br />
-            <input class="form-check-input" type="checkbox" name="special" /> Special Characters
-            <br />
-            <br />
-            <input type="submit" value="Generate Password" class="btn btn-primary"/>
-        </form>
-    </p>
+    <!-- <div class="container text-center">
+        
 
-    <a href="{% url 'about' %}" class="btn btn-sm btn-light">About</a>
-</div>
+        <p>
+            <div class="container-sm">
+                <div class="col-sm">
+                    <input type="text" value="{{ password }}" class="form-control "/>
+                </div>
+            </div>
+            <form action="{% url 'password' %}">
+                <select name="length">
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                    <option value="11">11</option>
+                    <option value="12" selected="selected">12</option>
+                    <option value="13">13</option>
+                    <option value="14">14</option>
+                </select> Length
+                <br />
+                <div class="col-sm">
+                <input class="form-range" type="range" value="10" min="6" max="14" id="rangeInput" name="rangeInput" oninput="amount.value=rangeInput.value"/></div> Length
+                <br />
+                <output id="amount" name="amount" for="rangeInput">10</output>
+                <br />
+
+                <div class="col-sm">
+                    <input type="text" value="{{ password }}" class="form-control "/>
+                </div>
+                <br />
+
+                <div class="d-flex justify-content-evenly">
+
+                    <div>
+                        <input class="form-check-input" type="checkbox" name="uppercase" /> Uppercase
+                    </div>
+
+                    <div d-flex justify-content-evenly>
+                        <input class="form-check-input" type="checkbox" name="numbers" /> Numbers
+                    </div>
+                    
+                    <div>
+                        <input class="form-check-input" type="checkbox" name="special" /> Special Characters
+                    </div>
+
+                </div>
+
+                <br />
+
+                <div class="d-flex justify-content-evenly">
+
+                    <div>
+                        <input class="form-check-input" type="checkbox" name="special" /> Exclude similar characters
+                    </div>
+
+                    <div>
+                        <input class="form-check-input" type="checkbox" name="special" /> Exclude ambiguous characters
+                    </div>
+
+                </div>
+
+                <br /><br />
+
+                <input type="submit" value="Generate Password" class="btn btn-outline-dark btn-lg px-5 py-3 fs-6 fw-bolder"/>
+
+            </form>
+        </p>
+
+    </div> -->
+
+    <!-- Password Generator Section-->
+    <section>
+
+        <div class="container">
+
+            <form id="pass-gen-form" class="d-sm-flex flex-column mb-5 align-items-center">
+
+                {% csrf_token %}
+
+                <div class="col-sm-8 text-center mb-3">
+
+                    <h1 class="display-2 fw-bolder"><span class="text-gradient d-inline">Let's generate a password</span></h1>
+
+                </div>
+
+                <div class="d-flex col-sm-8 mb-3">
+
+                    <input name="res" id="pass-gen-res" class="form-control me-3" placeholder="The generated password will be here..." readonly />
+
+                    <a onclick="copyPassword()" class="btn btn-primary btn-lg fs-6 fw-bolder">Copy</a>
+                </div>
+
+                <div class="col-sm-8 mb-3">
+
+                    <div class="d-flex justify-content-between">
+                        <div class="me-3">
+                            <label>Length</label>
+                        </div>
+                        
+                        <div class="col-sm d-flex flex-column align-items-center">
+
+                            <input id="length" class="form-range" type="range" value="10" min="6" max="14" name="length" oninput="amount.value=length.value"/>
+
+                            <output id="amount" name="amount" for="length">10</output>
+
+                        </div>
+
+                    </div>
+                    
+                </div>
+
+                <div class="col-sm-8 d-flex mb-3 justify-content-evenly">
+
+                    <div>
+                        <input id="uppercase" class="form-check-input" type="checkbox" name="uppercase" /> Uppercase
+                    </div>
+
+                    <div d-flex justify-content-evenly>
+                        <input id="numbers" class="form-check-input" type="checkbox" name="numbers" /> Numbers
+                    </div>
+                    
+                    <div>
+                        <input id="special" class="form-check-input" type="checkbox" name="special" /> Special Characters
+                    </div>
+
+                </div>
+
+                <div class="col-sm-8 d-flex mb-5 justify-content-evenly">
+
+                    <div>
+                        <input id="similar" class="form-check-input" type="checkbox" name="similar" /> <label>Exclude similar characters <div class="fw-light text-muted">0,O,o L,l,i,1</div></label>
+                    </div>
+
+                    <div>
+                        <input class="form-check-input" type="checkbox" name="special" /> <label>Exclude ambiguous characters
+                        <div class="fw-light text-muted">{}[]()/\'"~,;:.&lt; &gt;</div></label>
+                    </div>
+
+                </div>
+
+               <input type="submit" value="Generate Password" class="btn btn-outline-dark btn-lg px-5 py-3 fs-6 fw-bolder"/>
+
+            </form>
+
+        </div>
+
+    </section>
+
+    <!-- About Section-->
+    <section class="bg-light py-5">
+        <div class="container px-5">
+            <div class="row gx-5 justify-content-center">
+                <div class="col-xxl-8">
+                    <div class="text-center my-5">
+                        <h2 class="display-5 fw-bolder"><span class="text-gradient d-inline">About</span></h2>
+                        <p class="lead fw-light mb-4">Mauris id orci posuere, fringilla mi nec, fringilla ante.</p>
+                        <p class="text-muted">Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Suspendisse vestibulum convallis nulla, eu fermentum ex dictum eu. Donec luctus, magna a malesuada viverra, lorem magna aliquam ligula, vitae lobortis eros erat ut eros. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed pretium dignissim turpis eu bibendum. In commodo mollis erat, tincidunt tristique magna pretium at. Sed convallis dolor eget iaculis cursus. Proin vitae pharetra elit. Nam tempor, est ac mattis iaculis, justo ante posuere enim, efficitur mollis turpis ex ut elit. Sed laoreet a lorem non placerat. Duis sed diam et diam tempus ullamcorper eget non nunc. Sed volutpat, sem ut malesuada accumsan, enim nibh pretium nisi, in lacinia neque est et lacus.</p>
+
+                        <!-- <div class="my-5">
+                            <a href="{% url 'home' %}" class="btn btn-lg btn-dark">Home</a>
+                        </div> -->
+
+                        <div class="d-flex justify-content-center fs-2 gap-4">
+                            <a class="text-gradient" href="#!"><i class="bi bi-twitter"></i></a>
+                            <a class="text-gradient" href="#!"><i class="bi bi-linkedin"></i></a>
+                            <a class="text-gradient" href="#!"><i class="bi bi-github"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+{% endblock %}
+
+<!-- Footer-->
+<footer class="bg-white py-4 mt-auto">
+    <div class="container px-5">
+        <div class="row align-items-center justify-content-between flex-column flex-sm-row">
+            <div class="col-auto"><div class="small m-0">Copyright &copy; Your Website 2023</div></div>
+            <div class="col-auto">
+                <a class="small" href="#!">Privacy</a>
+                <span class="mx-1">&middot;</span>
+                <a class="small" href="#!">Terms</a>
+                <span class="mx-1">&middot;</span>
+                <a class="small" href="#!">Contact</a>
+            </div>
+        </div>
+    </div>
+</footer>

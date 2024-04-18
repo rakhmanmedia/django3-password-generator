@@ -4,29 +4,45 @@ import random
 
 # Create your views here.
 
+# Function to create range of char
+def range_char(first, last):
+    return (chr(n) for n in range(ord(first), ord(last) + 1))
+
 def home(request):
-    return render(request, 'generator/home.html', {'password': 'jdkfjkd932ksk'})
+    return render(request, 'generator/home.html')
 
 def password(request):
-    
-    thepassword = ''
 
-    characters = list('qwertyuiopasdfghjklzxcvbnm')
+    the_password = ''
+
     length = int(request.GET.get('length'))
 
+    characters = list(range_char("a", "z"))
+
     if request.GET.get('uppercase'):
-        characters.extend(list('QWERTYUIOPASDFGHJKLZXCVBNM'))
+        characters.extend(list(range_char("A", "Z")))
 
     if request.GET.get('numbers'):
-        characters.extend(list('1234567890'))
+        characters.extend(list('0123456789'))
 
     if request.GET.get('special'):
         characters.extend(list('!@#$%^&*(){[}]?'))
+ 
+    similars = ('0,O,o L,l,i,1')
 
     for x in range(length):
-        thepassword += random.choice(characters)
+        the_password += random.choice(characters)
 
-    return  render(request, 'generator/password.html', {'password':thepassword})
+        if request.GET.get('similar'):
+            while True:
+                if similars.find(the_password[-1]) > 0:
+                    the_password = the_password[:-1]
+                    the_password += random.choice(characters)
+                else:
+                    break
+                
+
+    return HttpResponse(the_password)
 
 def about(request):
     return render(request, 'generator/about.html')
